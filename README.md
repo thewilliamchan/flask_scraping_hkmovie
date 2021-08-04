@@ -27,11 +27,13 @@ Example:
 I want to watch **黑寡婦** on **Aug** **2** this year.
 
 `movie_name`: **黑寡婦**
+
 `watch_month`: **8**
+
 `watch_day`: **2**
 
 URL:
-`/movie_search?movie_name=**黑寡婦**&watch_month=**8**&watch_day=**2**`
+`/movie_search?movie_name=黑寡婦&watch_month=8&watch_day=2`
 
 ## Future Enhancements:
 Search by
