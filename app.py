@@ -16,16 +16,17 @@ def home():
     return """
     <h3>Please enter the movie name you would like to watch with a date.</h3> 
     <h3>We would help you to look for available schedules in all the cinemas in HK.</h3>
-    <h4>Example: I want to watch <span style='color:#134e6f'>黑寡婦</span> on <span style='color:#ffa822'>Aug</span> <span style='color:#ff6150'>2</span> this year.</h4>
-    <h4>URL would be: /movie_search?movie_name=<span style='color:#134e6f'>黑寡婦</span>&watch_month=<span style='color:#ffa822'>8</span>&watch_day=<span style='color:#ff6150'>2</span></h4> 
+    <h4>Example: I want to watch <span style='color:#134e6f'>黑寡婦</span> after <span style='color:#574f7d'>19</span>:<span style='color:#679186'>30</span> on <span style='color:#ffa822'>Aug</span> <span style='color:#ff6150'>2</span> this year.</h4>
+    <h4>URL would be: /movie_search?name=<span style='color:#134e6f'>黑寡婦</span>&month=<span style='color:#ffa822'>8</span>&day=<span style='color:#ff6150'>2</span>&hour=<span style='color:#574f7d'>19</span>&minute=<span style='color:#679186'>30</span></h4> 
     """
 
 @app.route("/movie_search")
 def movie_search():
-    movie_name = urllib.parse.unquote(request.args.get("movie_name"))
+    movie_name = urllib.parse.unquote(request.args.get("name"))
     print(movie_name)
-    watch_month = request.args.get("watch_month")
-    watch_day = request.args.get("watch_day")
+    watch_month = request.args.get("month")
+    watch_day = request.args.get("day")
+    watch_time = int(request.args.get("hour")) * 60 + int(request.args.get("minute"))
 
     if movie_name is None or watch_month is None or watch_day is None:
         return "<h4>Please put the movie name, the month and day to watch this movie first</h4>"
@@ -124,6 +125,14 @@ def movie_search():
         print(e)
         driver.quit()
         return "<h4>Server is not ready now. Please try again later</h4>"
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "div.cinemas div.cinema div.cinemaName"))
+        )
+    except Exception as e:
+        print(e)
+        driver.quit()
+        return "<h4>Server is not ready now. Please try again later</h4>"
     cinemas = driver.find_elements_by_css_selector("div.cinemas div.cinema")
     matched_showtime_list = []
     for cinema in cinemas:
@@ -131,7 +140,9 @@ def movie_search():
         showtimes = cinema.find_elements_by_css_selector("div.show div.time[style='background-color: rgb(3, 151, 4);']")
         for showtime in showtimes:
             showtime_time = showtime.text
-            matched_showtime_list.append([cinema_name, showtime_date.strftime("%Y-%m-%d"), showtime_time])
+            showtime_minutes = int(showtime_time.split(":")[0]) * 60 + int(showtime_time.split(":")[1])
+            if showtime_minutes >= watch_time:
+                matched_showtime_list.append([cinema_name, showtime_date.strftime("%Y-%m-%d"), showtime_time])
     matched_showtime_results = f"<h4>There are available showtimes for <span style='color:#134e6f'>{movie_name}</span>!</h4>"
     for matched_showtime in matched_showtime_list:
         matched_showtime_results += f"<tr><td>{matched_showtime[0]}</td><td>{matched_showtime[1]}</td><td>{matched_showtime[2]}</td></tr>"
