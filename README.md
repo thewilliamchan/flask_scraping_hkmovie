@@ -38,7 +38,6 @@ URL:
 ## Future Enhancements:
 Search by
 - Time
-- Region
 
 Sort by
 - Price
