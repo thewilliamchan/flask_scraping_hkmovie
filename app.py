@@ -112,12 +112,12 @@ def movie_search():
         search_date_full = datetime.datetime(datetime.datetime.now().year, search_date_month, search_date_day)
         if movie_date_full == search_date_full:
             date_matched = True
+            movie_date.click()
             break
+    showtime_date = movie_date_full
     if not date_matched:
         driver.quit()
         return f"<h4>Unfortunately no available showtime for <span style='color:#134e6f'>{movie_name}</span>. Would you consider another day or another movie?</h4>"
-    showtime_date = movie_date_full
-    movie_date.click()
 
     # ===== GET SHOWTIMES =====
     try:
