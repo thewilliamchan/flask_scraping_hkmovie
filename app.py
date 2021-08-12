@@ -142,13 +142,14 @@ def movie_search():
     for cinema in cinemas:
         try:
             WebDriverWait(driver, 60).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "div.cinema"))
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div.cinema div.cinemaName"))
             )
         except Exception as e:
             print(e)
             driver.quit()
             return "<h4>Server is not ready now. Please try again later</h4>"
         cinema_name = cinema.find_element_by_css_selector("div.cinemaName").text
+        print(cinema_name)
         try:
             WebDriverWait(driver, 60).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "div.show div.time"))
@@ -158,6 +159,7 @@ def movie_search():
             driver.quit()
             return "<h4>Server is not ready now. Please try again later</h4>"
         showtimes = cinema.find_elements_by_css_selector("div.show div.time[style='background-color: rgb(3, 151, 4);']")
+        print(showtimes[0])
         for showtime in showtimes:
             showtime_time = showtime.text
             showtime_minutes = int(showtime_time.split(":")[0]) * 60 + int(showtime_time.split(":")[1])
