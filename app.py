@@ -143,6 +143,7 @@ def movie_search():
     matched_showtime_list = []
     for cinema in cinemas:
         cinema_name = cinema.find_element_by_css_selector("div.cinemaName").text
+        print(cinema_name)
         showtimes = cinema.find_elements_by_css_selector("div.show div.time[style='background-color: rgb(3, 151, 4);']")
         # print(showtimes[0].text)
         for showtime in showtimes:
