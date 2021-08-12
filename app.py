@@ -142,7 +142,7 @@ def movie_search():
     for cinema in cinemas:
         try:
             WebDriverWait(driver, 60).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "div.cinema div.cinemaName"))
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div.cinema"))
             )
         except Exception as e:
             print(e)
@@ -151,7 +151,7 @@ def movie_search():
         cinema_name = cinema.find_element_by_css_selector("div.cinemaName").text
         try:
             WebDriverWait(driver, 60).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "div.show div.time"))
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div.time"))
             )
         except Exception as e:
             print(e)
