@@ -115,7 +115,6 @@ def movie_search():
             movie_date.click()
             break
     showtime_date = movie_date_full
-    driver.implicitly_wait(5)
     if not date_matched:
         driver.quit()
         return f"<h4>Unfortunately no available showtime for <span style='color:#134e6f'>{movie_name}</span>. Would you consider another day or another movie?</h4>"
@@ -139,9 +138,11 @@ def movie_search():
         return "<h4>Server is not ready now. Please try again later</h4>"
     cinemas = driver.find_elements_by_css_selector("div.cinemas div.cinema")
     matched_showtime_list = []
+    print("passed 1")
     for cinema in cinemas:
+        print("passed 2")
         try:
-            WebDriverWait(driver, 60).until(
+            WebDriverWait(cinema, 60).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "div.cinema div.cinemaName"))
             )
         except Exception as e:
@@ -151,7 +152,7 @@ def movie_search():
         cinema_name = cinema.find_element_by_css_selector("div.cinemaName").text
         print(cinema_name)
         try:
-            WebDriverWait(driver, 60).until(
+            WebDriverWait(cinema, 60).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "div.show div.time"))
             )
         except Exception as e:
