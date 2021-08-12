@@ -5,13 +5,14 @@
 ## Requirements:
 - Run `pip install -r requirements.txt`
 - Download Geckodriver from https://github.com/mozilla/geckodriver/releases and place the geckodriver.exe in the project directory
+- Install firefox on your machine
 
 ## Compulsory parameters:
-- Movie name `movie_name`; accept string values
-- Month of the date `watch_month`; accept numeric values
-- Day of the date `watch_day`; accept numeric values
-- Hour of the date `watch_hour`; accept numeric values
-- Minute of the date `watch_minute`; accept numeric values
+- Movie name `name`; accept string values
+- Month of the date `month`; accept numeric values
+- Day of the date `day`; accept numeric values
+- Hour of the date `hour`; accept numeric values
+- Minute of the date `minute`; accept numeric values
 
 ## Output:
 List of available showtimes with
@@ -22,24 +23,24 @@ List of available showtimes with
 
 ## Instructions:
 Domain name: your defined IP address or hostname
-URL (after domain name): `/movie_search?movie_name={parameter1}&watch_month={parameter2}&watch_day={parameter3}&watch_hour={parameter4}&watch_minute={parameter5}`
+URL (after domain name): `/movie_search?name={parameter1}&month={parameter2}&day={parameter3}&hour={parameter4}&minute={parameter5}`
 
 Example:
 
 I want to watch **黑寡婦** on **Aug** **2** after **19**:**30** this year.
 
-`movie_name`: **黑寡婦**
+`name`: **黑寡婦**
 
-`watch_month`: **8**
+`month`: **8**
 
-`watch_day`: **2**
+`day`: **2**
 
-`watch_hour`: **19**
+`hour`: **19**
 
-`watch_minute`: **30**
+`minute`: **30**
 
 URL (after domain name):
-`/movie_search?movie_name=黑寡婦&watch_month=8&watch_day=2&watch_hour=19&watch_minute=30`
+`/movie_search?name=黑寡婦&month=8&day=2&hour=19&minute=30`
 
 ## Important facts:
 - Developed in macOS environment
