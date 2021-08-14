@@ -15,7 +15,7 @@ app = Flask(__name__)
 def home():
     return """
     <h3>Please enter the movie name you would like to watch with a date.</h3> 
-    <h3>We would help you to look for available schedules in all the cinemas in HK.</h3>
+    <h3>We would help you to look for available showtimes in all the cinemas in HK.</h3>
     <h4>Example: I want to watch <span style='color:#134e6f'>黑寡婦</span> after <span style='color:#574f7d'>19</span>:<span style='color:#679186'>30</span> on <span style='color:#ffa822'>Aug</span> <span style='color:#ff6150'>2</span> this year.</h4>
     <h4>URL would be: /movie_search?name=<span style='color:#134e6f'>黑寡婦</span>&month=<span style='color:#ffa822'>8</span>&day=<span style='color:#ff6150'>2</span>&hour=<span style='color:#574f7d'>19</span>&minute=<span style='color:#679186'>30</span></h4> 
     """
@@ -53,7 +53,7 @@ def movie_search():
     except Exception as e:
         print(e)
         driver.quit()
-        return "<h4>The movie should be too old. Or server is not ready now. Please try again later</h4>"
+        return "<h4>Server is not ready now. Please try again later</h4>"
     search = driver.find_element_by_css_selector("div.search-wrapper")
     search.click()
     try:
@@ -63,7 +63,7 @@ def movie_search():
     except Exception as e:
         print(e)
         driver.quit()
-        return "<h4>The movie should be too old. Or server is not ready now. Please try again later</h4>"
+        return "<h4>Server is not ready now. Please try again later</h4>"
     search_input = driver.find_element_by_css_selector("div.searchOverlayHeader input")
     # User variable 1
     search_input.send_keys(movie_name)
@@ -74,27 +74,28 @@ def movie_search():
     except Exception as e:
         print(e)
         driver.quit()
-        return "<h4>Server is not ready now. Please try again later</h4>"
-    first_search_result_name = driver.find_element_by_css_selector("div.shows a.movie div.name").text
-    print(first_search_result_name)
-    if movie_name != first_search_result_name:
-        search_results = driver.find_elements_by_css_selector("div.shows a.movie div.name")
-        result_list = []
-        for result in search_results:
-            result_list.append(result.text)
-            potential_movie_names = "<h4>Your movie name cannot be matched. Are you looking for?</h4>"
-            for potential_movie_name in result_list:
-                potential_movie_names += f"<p>{potential_movie_name}</p>"
+        return "<h4>The movie should be too old. Or server is not ready now. Please try again later</h4>"
+    search_results = driver.find_elements_by_css_selector("div.shows a.movie div.name")
+    result_list = []
+    search_mapped = False
+    for result in search_results:
+        if movie_name == result.text:
+            search_mapped = True
+            result.click()
+            break
+        result_list.append(result.text)
+    if not search_mapped:
+        potential_movie_names = "<h4>Your movie name cannot be matched. Are you looking for?</h4>"
+        for potential_movie_name in result_list:
+            potential_movie_names += f"<p>{potential_movie_name}</p>"
         driver.quit()
         return potential_movie_names
-    first_search_result = driver.find_element_by_css_selector("div.shows a.movie div.name")
-    first_search_result.click()
 
     # ===== DATE CHECK =====
     driver.switch_to.window(driver.window_handles[1])
     try:
         WebDriverWait(driver, 60).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "div.buttons button.btn"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, "div.buttons button.btn:not(.alt)"))
         )
     except Exception as e:
         print(e)
@@ -154,35 +155,34 @@ def movie_search():
         return "<h4>Server is not ready now. Please try again later</h4>"
     cinemas = driver.find_elements_by_css_selector("div.cinemas div.cinema")
     matched_showtime_list = []
-    print("passed 1")
     for cinema in cinemas:
-        print("passed 2")
         cinema_name = cinema.find_element_by_css_selector("div.cinemaName").text
         print(cinema_name)
         showtimes = cinema.find_elements_by_css_selector("div.show div.time[style='background-color: rgb(3, 151, 4);']")
-        for showtime in showtimes:
-            showtime_time = showtime.text
-            print(showtime_time)
-            showtime_minutes = int(showtime_time.split(":")[0]) * 60 + int(showtime_time.split(":")[1])
-            if showtime_minutes >= watch_time:
-                showtime.click()
-                driver.switch_to.window(driver.window_handles[2])
-                try:
-                    WebDriverWait(driver, 60).until(
-                        EC.presence_of_element_located((By.CSS_SELECTOR, "div.timePrice div.text.dispDesktop"))
-                    )
-                except Exception as e:
-                    print(e)
-                    driver.quit()
-                    return "<h4>Server is not ready now. Please try again later</h4>"
-                price = driver.find_element_by_css_selector("div.timePrice div.text.dispDesktop").text.strip()
-                print(price)
-                matched_showtime_list.append([cinema_name, showtime_date.strftime("%Y-%m-%d"), showtime_time, price])
-                driver.close()
-                driver.switch_to.window(driver.window_handles[1])
+        if showtimes is not None:
+            for showtime in showtimes:
+                showtime_time = showtime.text
+                print(showtime_time)
+                showtime_minutes = int(showtime_time.split(":")[0]) * 60 + int(showtime_time.split(":")[1])
+                if showtime_minutes >= watch_time:
+                    # showtime.click()
+                    # driver.switch_to.window(driver.window_handles[2])
+                    # try:
+                    #     WebDriverWait(driver, 60).until(
+                    #         EC.presence_of_element_located((By.CSS_SELECTOR, "div.timePrice div.text.dispDesktop"))
+                    #     )
+                    # except Exception as e:
+                    #     print(e)
+                    #     driver.quit()
+                    #     return "<h4>Server is not ready now. Please try again later</h4>"
+                    # price = driver.find_element_by_css_selector("div.timePrice div.text.dispDesktop").text.strip()
+                    # print(price)
+                    matched_showtime_list.append([cinema_name, showtime_date.strftime("%Y-%m-%d"), showtime_time])
+                    # driver.close()
+                    # driver.switch_to.window(driver.window_handles[1])
 
     matched_showtime_results = f"<h4>There are available showtimes for <span style='color:#134e6f'>{movie_name}</span>!</h4>"
     for matched_showtime in matched_showtime_list:
-        matched_showtime_results += f"<tr><td>{matched_showtime[0]}</td><td>{matched_showtime[1]}</td><td>{matched_showtime[2]}</td><td>{matched_showtime[3]}</td></tr>"
+        matched_showtime_results += f"<tr><td>{matched_showtime[0]}</td><td>{matched_showtime[1]}</td><td>{matched_showtime[2]}</td></tr>"
     driver.quit()
     return "<table>" + matched_showtime_results + "</table>"

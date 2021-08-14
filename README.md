@@ -19,7 +19,6 @@ List of available showtimes with
 - Cinema name
 - Date
 - Time
-- Price
 
 ## Instructions:
 Domain name: your defined IP address or hostname
@@ -44,5 +43,6 @@ URL (after domain name):
 
 ## Important facts:
 - Developed in macOS environment
-- Requires high memory from the machine as there are many pages and many elements to process
+- Might take some time to complete as there are many pages and many elements to process
 - Dependant on the website HTML structure. If there is website revamp so that the HTML structure is changed on hkmovie6.com, this program might have to be modified
+- Price not available yet as not all the cinema pages have this information
