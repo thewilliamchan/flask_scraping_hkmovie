@@ -46,14 +46,30 @@ def movie_search():
     driver.get("https://hkmovie6.com/")
 
     # ===== SEARCH =====
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "div.search-wrapper"))
+        )
+    except Exception as e:
+        print(e)
+        driver.quit()
+        return "<h4>The movie should be too old. Or server is not ready now. Please try again later</h4>"
     search = driver.find_element_by_css_selector("div.search-wrapper")
     search.click()
+    try:
+        WebDriverWait(driver, 60).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "div.searchOverlayHeader input"))
+        )
+    except Exception as e:
+        print(e)
+        driver.quit()
+        return "<h4>The movie should be too old. Or server is not ready now. Please try again later</h4>"
     search_input = driver.find_element_by_css_selector("div.searchOverlayHeader input")
     # User variable 1
     search_input.send_keys(movie_name)
     try:
         WebDriverWait(driver, 60).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "div.shows a.movie"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, "div.shows a.movie div.name"))
         )
     except Exception as e:
         print(e)
@@ -122,7 +138,7 @@ def movie_search():
     # ===== GET SHOWTIMES =====
     try:
         WebDriverWait(driver, 60).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "div.cinemas div.cinema div.show div.time"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, "div.cinemas div.cinema div.cinemaName"))
         )
     except Exception as e:
         print(e)
@@ -130,7 +146,7 @@ def movie_search():
         return "<h4>Server is not ready now. Please try again later</h4>"
     try:
         WebDriverWait(driver, 60).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "div.cinemas div.cinema div.cinemaName"))
+            EC.presence_of_element_located((By.CSS_SELECTOR, "div.cinemas div.cinema div.shows div.show"))
         )
     except Exception as e:
         print(e)
@@ -141,28 +157,12 @@ def movie_search():
     print("passed 1")
     for cinema in cinemas:
         print("passed 2")
-        try:
-            WebDriverWait(cinema, 60).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "div.cinema div.cinemaName"))
-            )
-        except Exception as e:
-            print(e)
-            driver.quit()
-            return "<h4>Server is not ready now. Please try again later</h4>"
         cinema_name = cinema.find_element_by_css_selector("div.cinemaName").text
         print(cinema_name)
-        try:
-            WebDriverWait(cinema, 60).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "div.show div.time"))
-            )
-        except Exception as e:
-            print(e)
-            driver.quit()
-            return "<h4>Server is not ready now. Please try again later</h4>"
         showtimes = cinema.find_elements_by_css_selector("div.show div.time[style='background-color: rgb(3, 151, 4);']")
-        print(showtimes[0])
         for showtime in showtimes:
             showtime_time = showtime.text
+            print(showtime_time)
             showtime_minutes = int(showtime_time.split(":")[0]) * 60 + int(showtime_time.split(":")[1])
             if showtime_minutes >= watch_time:
                 showtime.click()
@@ -176,9 +176,11 @@ def movie_search():
                     driver.quit()
                     return "<h4>Server is not ready now. Please try again later</h4>"
                 price = driver.find_element_by_css_selector("div.timePrice div.text.dispDesktop").text.strip()
+                print(price)
                 matched_showtime_list.append([cinema_name, showtime_date.strftime("%Y-%m-%d"), showtime_time, price])
                 driver.close()
                 driver.switch_to.window(driver.window_handles[1])
+
     matched_showtime_results = f"<h4>There are available showtimes for <span style='color:#134e6f'>{movie_name}</span>!</h4>"
     for matched_showtime in matched_showtime_list:
         matched_showtime_results += f"<tr><td>{matched_showtime[0]}</td><td>{matched_showtime[1]}</td><td>{matched_showtime[2]}</td><td>{matched_showtime[3]}</td></tr>"
