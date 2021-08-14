@@ -37,11 +37,6 @@ def movie_search():
     options = Options()
     options.headless = True
 
-    try:
-        driver.quit()
-    except Exception as e:
-        print(e)
-
     driver = webdriver.Firefox(executable_path=f"{os.getcwd()}/geckodriver", options=options)
     driver.get("https://hkmovie6.com/")
 
@@ -164,6 +159,7 @@ def movie_search():
             )
         except Exception as e:
             print(e)
+            print("thrown")
             continue
         showtimes = cinema.find_elements_by_css_selector("div.show div.time[style='background-color: rgb(3, 151, 4);']")
         for showtime in showtimes:
